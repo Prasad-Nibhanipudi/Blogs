@@ -1,3 +1,4 @@
+package utils.id;
 
 import it.unimi.dsi.util.XorShift1024StarPhiRandom;
 
@@ -16,11 +17,6 @@ import java.util.Random;
 
 public class IDGenerator {
 
-  private static final int BASE_36 = 36;
-  private static final int MIN_CHAR_LENGTH = 4;
-  private static final int MIN_BIT_LENGTH = 32;
-  private static final int THRESHOLD_BIT_LENGTH = 64;
-
   private static Random singletonRandom1024;
 
   private static boolean initialized = false;
@@ -32,6 +28,20 @@ public class IDGenerator {
     this.bitLength = bitLength;
   }
 
+  protected void reSeed(){
+    seed(singletonRandom1024);
+  }
+
+  private static void seed(final Random random) {
+    SecureRandom secureRandom = new SecureRandom();
+    byte[] rand = secureRandom.generateSeed(8);
+    ByteBuffer buffer = ByteBuffer.wrap(rand);
+    long seed = buffer.getLong();
+    // Ensure Random is locked
+    synchronized (random) {
+      random.setSeed(seed);
+    }
+  }
 
   // Depend on OS given entropy.
   /**
@@ -81,7 +91,7 @@ public class IDGenerator {
   /**
    * @return The next random ID  with given fixed length in Base36. ID will be in Uppercase by default.
    */
-  public String nextID(boolean isCaseSensitive) {
+  public String nextID() {
     return (nextValue().toString(36).toUpperCase());
   }
 
@@ -100,11 +110,10 @@ public class IDGenerator {
     FileWriter writer1 = new FileWriter("caseInsensitive.txt");
     try(PrintWriter pw1 = new PrintWriter(writer1)) {
       for (int i = 0; i < 100000000; i++) {
-        String idCaseSenstiveChars = idCaseInsenstive.nextID(true);
+        String idCaseSenstiveChars = idCaseInsenstive.nextID();
         pw1.printf("%s%s",idCaseSenstiveChars, System.lineSeparator());
         maxlenIdCaseInsenstive = Math.max(maxlenIdCaseInsenstive,idCaseSenstiveChars.length());
         minlenIdCaseInsenstive = Math.min(minlenIdCaseInsenstive,idCaseSenstiveChars.length());
-
       }
     }
     System.out.println("minlenIdCaseInsenstive="+minlenIdCaseInsenstive+", maxlenIdCaseInsenstive="+maxlenIdCaseInsenstive);
