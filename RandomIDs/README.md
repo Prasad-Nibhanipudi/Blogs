@@ -10,5 +10,4 @@ sort --parallel=8 -uo caseInsensitiveSorted.txt caseInsensitive.txt
 uniq -c caseInsensitiveSorted.txt | grep -v '^ *1 '
 
 
-#Run the IDGeneratorMultiThreadedTest to create and check id's 
-# how far they are
+# Run the IDGeneratorMultiThreadedTest to create and check id's how far they are
