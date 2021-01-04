@@ -48,14 +48,7 @@ public class IDGenerator {
    * @param random
    */
   private static void seedGenerator(final Random random) {
-    SecureRandom secureRandom = new SecureRandom();
-    byte[] rand = secureRandom.generateSeed(8);
-    ByteBuffer buffer = ByteBuffer.wrap(rand);
-    long seed = buffer.getLong();
-    // Ensure Random is locked
-    synchronized (random) {
-      random.setSeed(seed);
-    }
+    seed(random);
   }
 
 
@@ -105,11 +98,12 @@ public class IDGenerator {
   }
 
   public static void main(String[] args) throws Exception {
-    IDGenerator idCaseInsenstive = new IDGenerator(73);
+    final int maxIterations = (null != args && args.length > 0) ? Integer.parseInt(args[0]) : 100000000;
+    IDGenerator idCaseInsenstive = new IDGenerator(73); // Just to get a random ID of average 14 characters long
     int maxlenIdCaseInsenstive  = 0,minlenIdCaseInsenstive=Integer.MAX_VALUE;
     FileWriter writer1 = new FileWriter("caseInsensitive.txt");
     try(PrintWriter pw1 = new PrintWriter(writer1)) {
-      for (int i = 0; i < 100000000; i++) {
+      for (int i = 0; i < maxIterations; i++) {
         String idCaseSenstiveChars = idCaseInsenstive.nextID();
         pw1.printf("%s%s",idCaseSenstiveChars, System.lineSeparator());
         maxlenIdCaseInsenstive = Math.max(maxlenIdCaseInsenstive,idCaseSenstiveChars.length());
